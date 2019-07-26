@@ -1,0 +1,60 @@
+{
+  "name": "topor",
+  "version": "1.0.0",
+  "description": " A topology engine based on zrender",
+  "main": "dist/topor.cjs.js",
+  "module": "dist/topor.esm.js",
+  "browser": "dist/topor.umd.js",
+  "scripts": {
+    "serve": "rollup -w -c scripts/rollup/config.js --environment TARGET:dev-esm",
+    "serve:cjs": "rollup -w -c scripts/rollup/config.js --environment TARGET:dev-cjs",
+    "serve:umd": "rollup -w -c scripts/rollup/config.js --environment TARGET:dev-umd",
+    "build": "node scripts/rollup/build.js",
+    "build:browser": "npm run build -- dev-umd",
+    "build:module": "npm run build -- dev-cjs,dev-esm",
+    "lint": "eslint src scripts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Billiballa/topor.git"
+  },
+  "keywords": [
+    "topology",
+    "zrender"
+  ],
+  "author": "Billiballa",
+  "bugs": {
+    "url": "https://github.com/Billiballa/topor/issues"
+  },
+  "homepage": "https://github.com/Billiballa/topor#readme",
+  "dependencies": {
+    "zrender": "^4.0.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babel-eslint": "^10.0.2",
+    "chalk": "^2.4.2",
+    "eslint": "^6.0.1",
+    "lint-staged": "^8.2.1",
+    "rollup": "^1.16.2",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-eslint": "^7.0.0",
+    "rollup-plugin-livereload": "^1.0.1",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-node-resolve": "^5.0.4",
+    "rollup-plugin-serve": "^1.0.1",
+    "terser": "^4.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "node scripts/verify-commit-msg.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Topor test</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+      #app {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        height: 100%;
+        width: 100%;
+        background: #ccc;
+      }
+      #topoEl {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 800px;
+        height: 600px;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="topoEl"></div>
+    </div>
+    <script type="module">
+      import { CustomGraph } from '../dist/topor.esm.js'
+      import Mock from '../mock/performance.js'
+      const topo = new CustomGraph(document.getElementById('topoEl'), {
+        renderer: 'canvas',
+        devicePixelRatio: 2,
+        width: 'auto',
+        height: 'auto'
+      });
+
+      topo.render(Mock.data());
+    </script>
+    <script>
+      (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.getElementById("topoEl").appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='http://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+    </script>
+  </body>
+</html>
