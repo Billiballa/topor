@@ -50,17 +50,12 @@ export default class CustomGraph extends BaseGraph {
   addDragEvent() {
     let moveStatus = false; // 是否可以拖动
     let lastPosition; // 初始点击位置
-    let ZRW, ZRH, GRect, GX, GY, GW, GH;
 
     this.zrender.on('mousedown', e => {
       //没有点击到任何图形 则开始整体拖拽
       if (!e.target) {
         moveStatus = true;
         lastPosition = [e.event.zrX, e.event.zrY];
-
-        [ZRW, ZRH] = [this.zrender.getWidth(), this.zrender.getHeight()]
-        GRect = this.root.getBoundingRect();
-        [GX, GY, GW, GH] = [GRect.x, GRect.y, GRect.width, GRect.height];
       }
     });
 
@@ -75,20 +70,12 @@ export default class CustomGraph extends BaseGraph {
 
     this.zrender.on('mousemove', e => {
       if (moveStatus) {
-        let [newPX, newPY] = [
+        let [PX, PY] = [
           this.root.position[0] + e.event.zrX - lastPosition[0],
           this.root.position[1] + e.event.zrY - lastPosition[1]
         ];
 
-        // 防止整体移出画布
-        // 最大
-        if (GX + newPX > ZRW) { newPX = ZRW - GX - 10 }
-        if (GY + newPY > ZRH) { newPY = ZRH - GY - 10 }
-        // 最小
-        if (GX + GW + newPX < 0) { newPX = 0 - (GX + GW) + 10 }
-        if (GY + GH + newPY < 0) { newPY = 0 - (GY + GH) + 10 }
-
-        this.root.attr('position', [newPX, newPY]);
+        this.root.attr('position', this.filterMoveBoundary(this, [PX, PY]));
 
         lastPosition = [e.event.zrX, e.event.zrY];
       }
@@ -112,11 +99,28 @@ export default class CustomGraph extends BaseGraph {
 
       this.root.animateTo({
         scale: [scale, scale],
-        position: [
+        position: this.filterMoveBoundary (this, [
           ex + ((px - ex) * (scale / sx)),
           ey + ((py - ey) * (scale / sy))
-        ]
+        ])
       }, 180)
     });
+  }
+
+  // 根据移动边界，计算新的position，防止内容移动到离画布过远的位置
+  filterMoveBoundary (graph, [PX, PY]) {
+    const MOVE_PADDING = 100; // 边界大小
+    const [ZRW, ZRH] = [graph.zrender.getWidth(), graph.zrender.getHeight()] // 画布大小
+    const RRect = graph.root.getBoundingRect(); // root盒
+    const [RX, RY, RW, RH] = [RRect.x, RRect.y, RRect.width, RRect.height];
+    const RS = graph.root.scale[0]; // root缩放
+    let [safePX, safePY] = [PX, PY];
+    // 最大
+    if (RX * RS + PX > ZRW - MOVE_PADDING) { safePX = ZRW - MOVE_PADDING - (RX * RS) }
+    if (RY * RS + PY > ZRH - MOVE_PADDING) { safePY = ZRH - MOVE_PADDING - (RY * RS) }
+    // 最小
+    if ((RX + RW) * RS + PX < MOVE_PADDING) { safePX = MOVE_PADDING - ((RX + RW) * RS) }
+    if ((RY + RH) * RS + PY < MOVE_PADDING) { safePY = MOVE_PADDING - ((RY + RH) * RS) }
+    return [safePX, safePY];
   }
 }

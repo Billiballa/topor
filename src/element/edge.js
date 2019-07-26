@@ -20,21 +20,22 @@ export default class EdgeElement extends BaseElement {
   render() {
     BaseElement.prototype.render.call(this);
 
-    // TODO @芊翔 - 下面代码只是简单示例,需要重写
+    const { styles, attrs } = this.data;
+    const global = this.graph._globalOptions;
 
-    let { styles, attrs } = this.data;
-    let global = this.graph._globalOptions;
+    const { src, target } = attrs;
 
-    let { src, target } = attrs;
-    let srcAttrs = this.graph.findDataById(src).attrs;
-    let targetAttrs = this.graph.findDataById(target).attrs;
+    const srcElement = this.graph.findElementById(src);
+    const targetElement = this.graph.findElementById(target);
+    const srcAttrs = this.graph.findDataById(src).attrs;
+    const targetAttrs = this.graph.findDataById(target).attrs;
 
     this.line = new zrender.Line({
       shape: {
-        x1: srcAttrs.x + srcAttrs.width / 2,
-        y1: srcAttrs.y + srcAttrs.height / 2,
-        x2: targetAttrs.x + targetAttrs.width / 2,
-        y2: targetAttrs.y + targetAttrs.height / 2
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0
       },
 
       style: {
@@ -45,34 +46,118 @@ export default class EdgeElement extends BaseElement {
       zlevel: constants.ZINDEX_LINE
     });
 
+    this.refreshLine(srcAttrs, targetAttrs);
+
     this.root.add(this.line);
 
-    // 初始化事件，因为要监听元素节点的事件，所以这里延迟等节点创建后监听
-    let srcElement = this.graph.findElementById(src);
-    let targetElement = this.graph.findElementById(target);
-    // console.log('srcElement:', src, srcElement);
-    // console.log('targetElement:', target, targetElement);
-
-    // 节点元素拖动的时候, 线跟着动
+    // 连线随节点移动
     srcElement.on('dragging', () => {
-      this.line.attr({
-        shape: {
-          x1: srcAttrs.x + srcAttrs.width / 2,
-          y1: srcAttrs.y + srcAttrs.height / 2,
-        }
-      })
+      this.refreshLine(srcAttrs, targetAttrs);
     });
 
     targetElement.on('dragging', () => {
-      this.line.attr({
-        shape: {
-          x2: targetAttrs.x + targetAttrs.width / 2,
-          y2: targetAttrs.y + targetAttrs.height / 2
-        }
-      })
+      this.refreshLine(srcAttrs, targetAttrs);
     });
 
     return this;
+  }
+
+  refreshLine(src, target) {
+    const linePoints = this.getEdgePosition(src, target);
+    if (linePoints) {
+      this.line.show();
+      this.line.attr({
+        shape: {
+          x1: linePoints.x1,
+          y1: linePoints.y1,
+          x2: linePoints.x2,
+          y2: linePoints.y2,
+        }
+      })
+    } else {
+      this.line.hide();
+    }
+  }
+  
+  // 获取连线的起点终点坐标
+  getEdgePosition(src, target) {
+    const startR = this.getVertexOfNode(src)
+    const endR = this.getVertexOfNode(target)
+    const startP = this.getIntrOfRectAndLine(startR, [startR, endR]);
+    const endP = this.getIntrOfRectAndLine(endR, [startR, endR]);
+    if (startP && endP && (this.getEdgeLength(startR, startP) < this.getEdgeLength(startR, endP))) {
+      return {
+        x1: startP.x,
+        y1: startP.y,
+        x2: endP.x,
+        y2: endP.y
+      }
+    }
+  }
+
+  // 获取节点的顶点
+  getVertexOfNode(node) {
+    const { x, y, width, height } = node
+    return {
+      x: x + width / 2,
+      y: y + height / 2,
+      width,
+      height,
+      points: [
+        { x, y },
+        { x: x + width, y },
+        { x: x + width, y: y + height },
+        { x, y: y + height }
+      ]
+    }
+  }
+
+  // 获取矩形和线段的交点
+  getIntrOfRectAndLine(rect, line) {
+    let point;
+
+    for (let i = 0; i < rect.points.length; i++) {
+      point = this.getIntrOfTwoLine(
+        rect.points[i],
+        rect.points[(i + 1) === rect.points.length ? 0 : (i + 1)],
+        line[0],
+        line[1],
+      )
+      if (point) {
+        return point;
+      }
+    }
+  }
+
+  // 获取线段AB,CD的交点
+  getIntrOfTwoLine(a, b, c, d) {
+    // 三角形abc 面积的2倍 
+    const area_abc = (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x);
+    // 三角形abd 面积的2倍 
+    const area_abd = (a.x - d.x) * (b.y - d.y) - (a.y - d.y) * (b.x - d.x);
+    // 面积符号相同则两点在线段同侧,不相交; 
+    if (area_abc * area_abd >= 0) {
+      return false;
+    }
+    // 三角形cda 面积的2倍 
+    const area_cda = (c.x - a.x) * (d.y - a.y) - (c.y - a.y) * (d.x - a.x);
+    // 三角形cdb 面积的2倍（通过另外三个加减即可得出）
+    const area_cdb = area_cda + area_abc - area_abd;
+    if (area_cda * area_cdb >= 0) {
+      return false;
+    }
+    //计算交点坐标 
+    const t = area_cda / (area_abd - area_abc);
+    const dx = t * (b.x - a.x),
+      dy = t * (b.y - a.y);
+    return { x: a.x + dx, y: a.y + dy };
+  }
+
+  // 获取线段AB长度
+  getEdgeLength(a, b) {
+    return Math.sqrt(
+      Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)
+    );
   }
 
   updateStatus() {

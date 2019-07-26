@@ -38,15 +38,16 @@ export default class NodeElement extends BaseElement {
     });
 
     // 防止鼠标移出画布后依然可以拖拽
-    graph.zrender.on('mouseout', () => {
-      moveNode = null;
-    });
+    // graph.zrender.on('mouseout', () => {
+    //   moveNode = null;
+    // });
 
     graph.zrender.on('mousemove', e => {
       if (moveNode) {
-        let [newPX, newPY] = [
-          moveNode.position[0] + e.event.zrX - lastPosition[0],
-          moveNode.position[1] + e.event.zrY - lastPosition[1]
+        const scale = graph.root.scale[0];
+        const [newPX, newPY] = [
+          moveNode.position[0] + (e.event.zrX - lastPosition[0]) / scale,
+          moveNode.position[1] + (e.event.zrY - lastPosition[1]) / scale
         ];
 
         moveNode.attr('position', [newPX, newPY]);
@@ -91,7 +92,7 @@ export default class NodeElement extends BaseElement {
     this.label = new zrender.Text({
       style: {
         text: attrs.label,
-        x: attrs.height / 2,
+        x: attrs.width / 2,
         y: attrs.height,
         fontSize: attrs.textSize || global.styles.textSize,
         textFill: styles.textColor || global.styles.textColor,
