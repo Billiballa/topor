@@ -91,10 +91,12 @@ export default class EdgeElement extends BaseElement {
     const linePoints = util.getEdgePosition(sourceNode, targetNode);
     if (linePoints) {
       const { source, target } = linePoints;
+      const line = util.getLongestLine([sourceNode, targetNode])
       const labelPosition = util.getLabelPositionOfEdge(
         { 
-          sourcePoint: source,
-          targetPoint: target
+          sourcePoint: line.source,
+          targetPoint: line.target,
+          length: line.length
         },
         {
           width: 0,
@@ -110,11 +112,13 @@ export default class EdgeElement extends BaseElement {
         }
       })
       this.label.attr({
-        shape: {
+        style: {
           x: labelPosition.x,
           y: labelPosition.y,
         }
       })
+      
+      this.label.attr('origin', [labelPosition.x, labelPosition.y]);
       this.label.attr('rotation', labelPosition.rotate);
 
 

@@ -194,14 +194,13 @@ export function getLongestLine(points) {
 export function getLabelPositionOfEdge(edge, label) {
   let sourcePoint = edge.sourcePoint;
   let targetPoint = edge.targetPoint;
-  console.log(sourcePoint, targetPoint);
   // 若连线向右倾斜 交换起始点 转换为向左倾斜
-  if (targetPoint.x < sourcePoint.x) {
+  if (targetPoint.x > sourcePoint.x) {
     sourcePoint = edge.targetPoint;
     targetPoint = edge.sourcePoint;
   }
   // 旋转角度
-  const rotate = Math.atan2(targetPoint.y - sourcePoint.y, targetPoint.x - sourcePoint.x);
+  const rotate = Math.PI - Math.atan2(targetPoint.y - sourcePoint.y, targetPoint.x - sourcePoint.x);
   // 连线的中心点
   const midP = {
     x: (targetPoint.x + sourcePoint.x) / 2,
