@@ -194,6 +194,7 @@ export function getLongestLine(points) {
 export function getLabelPositionOfEdge(edge, label) {
   let sourcePoint = edge.sourcePoint;
   let targetPoint = edge.targetPoint;
+  console.log(sourcePoint, targetPoint);
   // 若连线向右倾斜 交换起始点 转换为向左倾斜
   if (targetPoint.x > sourcePoint.x) {
     sourcePoint = edge.targetPoint;
