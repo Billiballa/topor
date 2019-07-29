@@ -78,8 +78,8 @@ export default class NodeElement extends BaseElement {
     this.image = new zrender.Image({
       // draggable: true,
       style: {
-        x: 0,
-        y: 0,
+        x: - attrs.width / 2,
+        y: - attrs.height / 2,
         width: attrs.width,
         height: attrs.height,
         image: attrs.image
@@ -92,8 +92,8 @@ export default class NodeElement extends BaseElement {
     this.label = new zrender.Text({
       style: {
         text: attrs.label,
-        x: attrs.width / 2,
-        y: attrs.height,
+        x: 0,
+        y: attrs.height / 2,
         fontSize: attrs.textSize || global.styles.textSize,
         textFill: styles.textColor || global.styles.textColor,
         textAlign: 'center'

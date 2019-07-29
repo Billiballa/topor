@@ -99,15 +99,15 @@ export default class EdgeElement extends BaseElement {
   getVertexOfNode(node) {
     const { x, y, width, height } = node
     return {
-      x: x + width / 2,
-      y: y + height / 2,
+      x,
+      y,
       width,
       height,
       points: [
-        { x, y },
-        { x: x + width, y },
-        { x: x + width, y: y + height },
-        { x, y: y + height }
+        { x: x - width / 2, y: y - height / 2 },
+        { x: x + width / 2, y: y - height / 2 },
+        { x: x + width / 2, y: y + height / 2 },
+        { x: x - width / 2, y: y + height / 2 }
       ]
     }
   }
