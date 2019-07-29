@@ -35,9 +35,9 @@ const edgeData = nodeData.reduce((all, item, i) => all.concat({
   },
   attrs: {
     label: `edge ${i + 1}`,
-    src: nodeData[i != 0 ? (i - 1) : (nodeData.length - 1)].id,
-    srcPort: './ResRoot/ResGroup1980/ResGroup3041/ResGroup3042/RadwareDevice17758/Interface17765',
-    srcLabel: '端口(高级)',
+    source: nodeData[i != 0 ? (i - 1) : (nodeData.length - 1)].id,
+    sourcePort: './ResRoot/ResGroup1980/ResGroup3041/ResGroup3042/RadwareDevice17758/Interface17765',
+    sourceLabel: '端口(高级)',
     target: item.id,
     targetPort: './ResRoot/ResGroup1980/ciscoDevice11552/IndGroup11558/InterfaceBase11610',
     targetLabel: 'FastEthernet0/38',

@@ -27,7 +27,7 @@ export default class CustomGraph extends BaseGraph {
     let countMap = {};
     for (let el of els) {
       if (el.type === 'line') {
-        let key = `${el.src}~${el.target}`;
+        let key = `${el.source}~${el.target}`;
         if (!countMap[key]) {
           countMap[key] = [];
         }

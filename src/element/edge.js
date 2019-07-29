@@ -23,11 +23,11 @@ export default class EdgeElement extends BaseElement {
     const { styles, attrs } = this.data;
     const global = this.graph._globalOptions;
 
-    const { src, target } = attrs;
+    const { source, target } = attrs;
 
-    const srcElement = this.graph.findElementById(src);
+    const sourceElement = this.graph.findElementById(source);
     const targetElement = this.graph.findElementById(target);
-    const srcAttrs = this.graph.findDataById(src).attrs;
+    const sourceAttrs = this.graph.findDataById(source).attrs;
     const targetAttrs = this.graph.findDataById(target).attrs;
 
     this.line = new zrender.Line({
@@ -46,24 +46,24 @@ export default class EdgeElement extends BaseElement {
       zlevel: constants.ZINDEX_LINE
     });
 
-    this.refreshLine(srcAttrs, targetAttrs);
+    this.refreshLine(sourceAttrs, targetAttrs);
 
     this.root.add(this.line);
 
     // 连线随节点移动
-    srcElement.on('dragging', () => {
-      this.refreshLine(srcAttrs, targetAttrs);
+    sourceElement.on('dragging', () => {
+      this.refreshLine(sourceAttrs, targetAttrs);
     });
 
     targetElement.on('dragging', () => {
-      this.refreshLine(srcAttrs, targetAttrs);
+      this.refreshLine(sourceAttrs, targetAttrs);
     });
 
     return this;
   }
 
-  refreshLine(src, target) {
-    const linePoints = this.getEdgePosition(src, target);
+  refreshLine(source, target) {
+    const linePoints = this.getEdgePosition(source, target);
     if (linePoints) {
       this.line.show();
       this.line.attr({
@@ -80,8 +80,8 @@ export default class EdgeElement extends BaseElement {
   }
   
   // 获取连线的起点终点坐标
-  getEdgePosition(src, target) {
-    const startR = this.getVertexOfNode(src)
+  getEdgePosition(source, target) {
+    const startR = this.getVertexOfNode(source)
     const endR = this.getVertexOfNode(target)
     const startP = this.getIntrOfRectAndLine(startR, [startR, endR]);
     const endP = this.getIntrOfRectAndLine(endR, [startR, endR]);
