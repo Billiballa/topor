@@ -1,11 +1,22 @@
+/**
+ * @file 
+ * @desc 通用函数
+ */
+
 import zrender from 'zrender'
+import shape from './shape'
 
 export default {
   ...zrender.util,
 
+  ...shape,
+
   /**
-   * Mixin模式
-   * eg: class A extends mix(B, C) {}
+   * @func
+   * @desc Mixin模式
+   * @param {object} mixins 要合并的类
+   * @returns {object} 合并后的类
+   * @example class A extends mix(B, C) {}
    */
   mix(...mixins) {
     function copyProperties(target, source) {
