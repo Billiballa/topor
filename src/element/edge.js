@@ -136,14 +136,14 @@ export default class EdgeElement extends BaseElement {
     // 三角形abd 面积的2倍 
     const area_abd = (a.x - d.x) * (b.y - d.y) - (a.y - d.y) * (b.x - d.x);
     // 面积符号相同则两点在线段同侧,不相交; 
-    if (area_abc * area_abd >= 0) {
+    if (area_abc * area_abd > 0) {
       return false;
     }
     // 三角形cda 面积的2倍 
     const area_cda = (c.x - a.x) * (d.y - a.y) - (c.y - a.y) * (d.x - a.x);
     // 三角形cdb 面积的2倍（通过另外三个加减即可得出）
     const area_cdb = area_cda + area_abc - area_abd;
-    if (area_cda * area_cdb >= 0) {
+    if (area_cda * area_cdb > 0) {
       return false;
     }
     //计算交点坐标 
