@@ -67,8 +67,6 @@ export default class NodeElement extends BaseElement {
   render() {
     BaseElement.prototype.render.call(this);
 
-    // TODO @芊翔 - 下面代码只是简单示例,需要重写
-
     this.group = new zrender.Group();
     this.root.add(this.group)
 
@@ -76,7 +74,6 @@ export default class NodeElement extends BaseElement {
     let global = this.graph._globalOptions;
 
     this.image = new zrender.Image({
-      // draggable: true,
       style: {
         x: - attrs.width / 2,
         y: - attrs.height / 2,
@@ -87,7 +84,6 @@ export default class NodeElement extends BaseElement {
 
       zlevel: constants.ZINDEX_NODE
     });
-    this.group.add(this.image);
 
     this.label = new zrender.Text({
       style: {
@@ -99,6 +95,8 @@ export default class NodeElement extends BaseElement {
         textAlign: 'center'
       }
     });
+
+    this.group.add(this.image);
     this.group.add(this.label);
 
     this.group.attr('position', [attrs.x, attrs.y]);
@@ -108,49 +106,6 @@ export default class NodeElement extends BaseElement {
     this.group.toporType = 'node';
     this.image.toporType = 'node-image'
     this.label.toporType = 'node-label'
-
-    // 上次移动的鼠标位置
-    // let lastPos = null;
-
-    // let mousedown = (e) => {
-    //   lastPos = [e.event.clientX, e.event.clientY];
-
-    //   window.addEventListener('mousemove', mousemove);
-    //   window.addEventListener('mouseup', mouseup);
-    // }
-
-    // let mousemove = (e) => {
-    //   // 计算鼠标位置变化
-    //   let currPos = [e.clientX, e.clientY];
-    //   let posDiff = [currPos[0] - lastPos[0], currPos[1] - lastPos[1]];
-
-    //   // 同步修改分组下所有元素的坐标
-    //   this.group.eachChild(function (item) {
-    //     item.attr({
-    //       style: {
-    //         x: item.style.x + posDiff[0],
-    //         y: item.style.y + posDiff[1]
-    //       }
-    //     })
-    //   });
-
-    //   lastPos = currPos;
-
-    //   // 同步修改 标准数据结构的数据
-    //   this.data.attrs.x = this.image.style.x;
-    //   this.data.attrs.y = this.image.style.y;
-
-    //   // 对外发布移动事件 - 如果“线组件”监听了事件会同步修改
-    //   this.emit('dragging', posDiff);
-    // };
-
-    // // mouseup 释放所有事件
-    // let mouseup = () => {
-    //   window.removeEventListener('mousemove', mousemove);
-    //   window.removeEventListener('mouseup', mouseup);
-    // };
-
-    // this.image.on('mousedown', mousedown);
   }
 
   /**
@@ -184,6 +139,7 @@ export default class NodeElement extends BaseElement {
     this.root.remove(this.group);
     this.group = null;
     this.image = null;
+    this.label = null;
 
     return this;
   }
