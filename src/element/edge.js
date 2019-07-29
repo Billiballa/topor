@@ -23,6 +23,9 @@ export default class EdgeElement extends BaseElement {
   render() {
     BaseElement.prototype.render.call(this);
 
+    this.group = new zrender.Group();
+    this.root.add(this.group)
+
     const { styles, attrs } = this.data;
     const global = this.graph._globalOptions;
 
@@ -49,37 +52,77 @@ export default class EdgeElement extends BaseElement {
       zlevel: constants.ZINDEX_LINE
     });
 
-    this.refreshLine(sourceAttrs, targetAttrs);
+    this.label = new zrender.Text({
+      style: {
+        text: attrs.sourceLabel || attrs.targetLabel,
+        x: 0,
+        y: 0,
+        fontSize: attrs.textSize || global.styles.textSize,
+        textFill: styles.textColor || global.styles.textColor,
+        textAlign: 'center'
+      }
+    });
 
-    this.root.add(this.line);
+    this.refreshEdgePosition(sourceAttrs, targetAttrs);
+
+    this.group.add(this.line);
+    this.group.add(this.label);
+
+    this.group.toporEl = this;
+    this.group.toporId = this.id;
+    this.group.toporType = 'edge';
+    this.line.toporType = 'edge-line'
+    this.label.toporType = 'edge-label'
 
     // 连线随节点移动
     sourceElement.on('dragging', () => {
-      this.refreshLine(sourceAttrs, targetAttrs);
+      this.refreshEdgePosition(sourceAttrs, targetAttrs);
     });
 
     targetElement.on('dragging', () => {
-      this.refreshLine(sourceAttrs, targetAttrs);
+      this.refreshEdgePosition(sourceAttrs, targetAttrs);
     });
 
     return this;
   }
 
   // 刷新连线位置
-  refreshLine(source, target) {
-    const linePoints = util.getEdgePosition(source, target);
+  refreshEdgePosition(sourceNode, targetNode) {
+    const linePoints = util.getEdgePosition(sourceNode, targetNode);
     if (linePoints) {
-      this.line.show();
+      const { source, target } = linePoints;
+      const labelPosition = util.getLabelPositionOfEdge(
+        { 
+          sourcePoint: source,
+          targetPoint: target
+        },
+        {
+          width: 0,
+          height: 20
+        }
+      );
       this.line.attr({
         shape: {
-          x1: linePoints.source.x,
-          y1: linePoints.source.y,
-          x2: linePoints.target.x,
-          y2: linePoints.target.y,
+          x1: source.x,
+          y1: source.y,
+          x2: target.x,
+          y2: target.y,
         }
       })
+      this.label.attr({
+        shape: {
+          x: labelPosition.x,
+          y: labelPosition.y,
+        }
+      })
+      this.label.attr('rotation', labelPosition.rotate);
+
+
+      this.line.show();
+      this.label.show();
     } else {
       this.line.hide();
+      this.label.hide();
     }
   }
 
@@ -93,7 +136,12 @@ export default class EdgeElement extends BaseElement {
 
   dispose() {
     BaseElement.prototype.dispose.apply(this);
-    this.root.remove(this.line);
+    this.group.removeAll();
+    this.root.remove(this.group);
+    this.group = null;
+    this.image = null;
+    this.label = null;
+
     return this;
   }
 }
