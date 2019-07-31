@@ -59,7 +59,8 @@ export default class EdgeElement extends BaseElement {
         y: 0,
         fontSize: attrs.textSize || global.styles.textSize,
         textFill: styles.textColor || global.styles.textColor,
-        textAlign: 'center'
+        textAlign: 'center',
+        textVerticalAlign: 'middle'
       }
     });
 
@@ -91,18 +92,6 @@ export default class EdgeElement extends BaseElement {
     const linePoints = util.getEdgePosition(sourceNode, targetNode);
     if (linePoints) {
       const { source, target } = linePoints;
-      const line = util.getLongestLine([sourceNode, targetNode])
-      const labelPosition = util.getLabelPositionOfEdge(
-        { 
-          sourcePoint: line.source,
-          targetPoint: line.target,
-          length: line.length
-        },
-        {
-          width: 0,
-          height: 20
-        }
-      );
       this.line.attr({
         shape: {
           x1: source.x,
@@ -111,16 +100,19 @@ export default class EdgeElement extends BaseElement {
           y2: target.y,
         }
       })
+      const labelPosition = util.getLabelPositionOfEdge(
+        util.getLongestLine([source, target]),
+        { x: 0, y: 10 }
+      );
       this.label.attr({
         style: {
           x: labelPosition.x,
           y: labelPosition.y,
         }
-      })
-      
+      });
+
       this.label.attr('origin', [labelPosition.x, labelPosition.y]);
       this.label.attr('rotation', labelPosition.rotate);
-
 
       this.line.show();
       this.label.show();

@@ -181,37 +181,36 @@ export function getLongestLine(points) {
  * @desc 计算连线的文本的位置
  * @export
  * @param {object} edge 连线
- * @param {object} edge.sourcePoint 起点
- * @param {object} edge.targetPoint 终点
+ * @param {object} edge.source 起点
+ * @param {object} edge.target 终点
  * @param {object} label 连线的文本相关信息
- * @param {number} label.width
- * @param {number} label.height
+ * @param {number} label.x 连线相对于线的x偏移
+ * @param {number} label.y 连线相对于线的y偏移
  * @returns {object} position 连线文本的位置
  * @returns {number} position.x
  * @returns {number} position.y
  * @returns {number} position.rotate 旋转角度
  */
 export function getLabelPositionOfEdge(edge, label) {
-  let sourcePoint = edge.sourcePoint;
-  let targetPoint = edge.targetPoint;
-  console.log(sourcePoint, targetPoint);
-  // 若连线向右倾斜 交换起始点 转换为向左倾斜
-  if (targetPoint.x > sourcePoint.x) {
-    sourcePoint = edge.targetPoint;
-    targetPoint = edge.sourcePoint;
+  let source = edge.source;
+  let target = edge.target;
+  // 若连线是从右侧指向左侧 则交换起始点后计算
+  if (source.x > target.x) {
+    source = edge.target;
+    target = edge.source;
   }
   // 旋转角度
-  const rotate = Math.PI - Math.atan2(targetPoint.y - sourcePoint.y, targetPoint.x - sourcePoint.x);
+  const rotate = Math.atan2(target.y - source.y, target.x - source.x);
   // 连线的中心点
   const midP = {
-    x: (targetPoint.x + sourcePoint.x) / 2,
-    y: (targetPoint.y + sourcePoint.y) / 2
+    x: (target.x + source.x) / 2,
+    y: (target.y + source.y) / 2
   }
   // 比例
-  const lpb = (label.width / 2) / edge.length;
-  const x = (midP.x - (targetPoint.x - sourcePoint.x) * lpb) + label.height * Math.sin(rotate);
-  const y = (midP.y - (targetPoint.y - sourcePoint.y) * lpb) - label.height * Math.cos(rotate);
-  return { x, y, rotate }
+  const lpb = (label.x / 2) / edge.length;
+  const x = (midP.x - (target.x - source.x) * lpb) + label.y * Math.sin(rotate);
+  const y = (midP.y - (target.y - source.y) * lpb) - label.y * Math.cos(rotate);
+  return { x, y, rotate: - rotate } // zrender的旋转方向和原声canvas相反
 }
 
 export default {
