@@ -19,33 +19,26 @@ export default class BaseElement extends EventMixin{
     this.id = data.id;
   }
 
-  render(){
-    return this;
+  init() {
+    this.render()
   }
 
-  /**
-   * 更新元素数据
-   * @param  {Object} data
-   * @return {BaseElement}
-   */
-  update(data){
-    util.defaults(this.data, data)
-    return this;
+  render() {}
+
+  getFinalAttr () {
+    this.finalAttr = this.graph.getElAttr(this.type);
+    util.merge(this.finalAttr, this.data.attr, true);
   }
 
-  /**
-   * 更新节点状态
-   * @param  {Object} status
-   * @return {BaseElement}
-   */
-  updateStatus(status){
-    console.log(status)
-    return this;
+  setAttr(newAttr) {
+    util.merge(this.data.attr, newAttr, true);
+    this.render();
   }
 
-  /**
-   * 销毁元素
-   */
+  setMode(mode) {
+    console.log(mode)
+  }
+
   dispose(){
     EventMixin.prototype.dispose.apply(this);
     return this;

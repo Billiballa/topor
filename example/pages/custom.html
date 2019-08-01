@@ -57,7 +57,7 @@
 <body>
   <div id="app">
     <div class="bar">
-      <div class="bar-btn" @click="reload()">重新加载</div>
+      <div class="bar-btn" @click="add()">增加数据</div>
     </div>
     <div class="canvas-wrapper" ref="wrapper">
       <div id="canvas" ref="canvas"></div>
@@ -66,7 +66,7 @@
   <script type="module">
     import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.esm.browser.js'
     import { CustomGraph } from '../dist/topor.esm.js'
-    import Mock from '../mock/custom.js'
+    import mock from '../mock/custom.js'
 
     new Vue({
       mounted() {
@@ -81,15 +81,18 @@
             renderer: 'canvas',
             devicePixelRatio: 2,
             width: 'auto',
-            height: 'auto'
+            height: 'auto',
+            // backgroundColor: '#666',
+            // backgroundImage: '',
+            // backgroundRepeat: true,
+            // backgroundSize: 100,
           });
 
-          this.topo.render(Mock.data());
+          this.topo.render(mock());
         },
 
-        reload() {
-          this.topo.dispose();
-          this.topo.render(Mock.data());
+        add() {
+          this.topo.render(mock());
         }
       }
     }).$mount('#app')

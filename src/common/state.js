@@ -3,7 +3,7 @@ import util from "../util";
 export default class StateMixin {
   constructor() {
     // 全局设置
-    this._globalOptions = {}
+    this._globalOption = {}
     // 注册的插件
     this._plugins = []
     // 注册的元素
@@ -12,27 +12,49 @@ export default class StateMixin {
     this._data = {}
   }
 
-  getOptions() {
-    return util.clone(this._globalOptions);
+  getOption() {
+    return util.clone(this._globalOption);
   }
 
-  setOptions(newOptions) {
-    util.merge(this._globalOptions, newOptions, true);
-    return this.getOptions();
+  setOption(newOption) {
+    util.merge(this._globalOption, newOption, true);
+    return this.getOption();
   }
 
-  registerPlugin(plugin, options) {
+  registerPlugin(plugin, option) {
     if (!this._plugins.includes(plugin)) {
       this._plugins.push(plugin);
-      plugin.install(this, options);
+      plugin.install(this, option);
     }
   }
 
   registerElement(name, element) {
     if (!(name in this._elements)) {
-      this._elements[name] = element;
+      this._elements[name] = {
+        name,
+        handle: element,
+        attr: {}
+      };
       element.install(this);
     }
+  }
+
+  getElAttr(name) {
+    let el = this._elements[name];
+
+    if (!el) { return }
+
+    return util.clone(el.attr);
+  }
+
+  setElAttr(name, newAttr) {
+    let el = this._elements[name];
+
+    if (!el) { return }
+
+    util.merge(el.attr, newAttr, true);
+
+    return this.getElAttr(name)
   }
 
   addData(data) {
@@ -40,11 +62,11 @@ export default class StateMixin {
 
     if (!elClass) { return }
 
-    let el = new elClass(this, util.clone(data));
+    let el = new elClass.handle(this, util.clone(data));
 
     this._data[data.id] = el;
 
-    el.render();
+    el.init();
 
     return el;
   }
@@ -82,7 +104,7 @@ export default class StateMixin {
   dispose() {
     this.deleteData();
 
-    this._globalOptions = null;
+    this._globalOption = null;
     this._plugins = null;
     this._elements = null;
     this._data = null;

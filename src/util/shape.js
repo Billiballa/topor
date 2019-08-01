@@ -48,17 +48,18 @@ export function getEdgePosition(sourceNode, targetNode) {
  * @returns {object[]} rect.points 由节点顶点组成的数组
  */
 export function getVertexOfNode(node) {
-  const { x, y, width, height } = node
+  const { x, y, imageSize } = node
+  const half = imageSize / 2
   return {
     x,
     y,
-    width,
-    height,
+    width: imageSize,
+    height: imageSize,
     points: [
-      { x: x - width / 2, y: y - height / 2 },
-      { x: x + width / 2, y: y - height / 2 },
-      { x: x + width / 2, y: y + height / 2 },
-      { x: x - width / 2, y: y + height / 2 }
+      { x: x - half, y: y - half },
+      { x: x + half, y: y - half },
+      { x: x + half, y: y + half },
+      { x: x - half, y: y + half }
     ]
   }
 }

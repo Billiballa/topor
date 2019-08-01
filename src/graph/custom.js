@@ -2,8 +2,8 @@ import BaseGraph from './base'
 
 
 export default class CustomGraph extends BaseGraph {
-  constructor(dom, options) {
-    super(dom, options)
+  constructor(dom, option) {
+    super(dom, option)
 
     this.addDragEvent();
     this.addZoomEvent();
@@ -15,7 +15,7 @@ export default class CustomGraph extends BaseGraph {
 
   render(data) {
     // 自定义拓扑，计算连线的索引和总数
-    this.refreshLineIndexs(data.els);
+    // this.refreshLineIndexs(data.edge);
 
     // 转化成标准数据后，通过基类渲染
     return BaseGraph.prototype.render.call(this, data);

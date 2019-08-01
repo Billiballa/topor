@@ -37,7 +37,7 @@
     </div>
     <script type="module">
       import { CustomGraph } from '../dist/topor.esm.js'
-      import Mock from '../mock/performance.js'
+      import { data } from '../mock/performance.js'
       const topo = new CustomGraph(document.getElementById('topoEl'), {
         renderer: 'canvas',
         devicePixelRatio: 2,
@@ -45,10 +45,10 @@
         height: 'auto'
       });
 
-      topo.render(Mock.data());
+      topo.render(data);
     </script>
     <script>
-      (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.getElementById("topoEl").appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='http://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+      (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.getElementById("app").appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='http://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
     </script>
   </body>
 </html>

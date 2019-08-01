@@ -1,5 +1,4 @@
 import zrender from 'zrender'
-import constants from '../common/constants'
 import BaseElement from './base';
 import util from '../util'
 
@@ -12,62 +11,23 @@ import util from '../util'
 export default class EdgeElement extends BaseElement {
   constructor(graph, data) {
     super(graph, data);
+    this.type = 'edge';
   }
 
   static install() {}
-
-  /**
-   * 渲染
-   * @return {TopoNodeElement}
-   */
-  render() {
-    BaseElement.prototype.render.call(this);
+  
+  init () {
+    this.line = new zrender.Line();
+    this.label = new zrender.Text({
+      silent: true
+    });
 
     this.group = new zrender.Group();
-    this.root.add(this.group)
-
-    const { styles, attrs } = this.data;
-    const global = this.graph._globalOptions;
-
-    const { source, target } = attrs;
-
-    const sourceElement = this.graph.findElementById(source);
-    const targetElement = this.graph.findElementById(target);
-    const sourceAttrs = this.graph.findDataById(source).attrs;
-    const targetAttrs = this.graph.findDataById(target).attrs;
-
-    this.line = new zrender.Line({
-      shape: {
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0
-      },
-
-      style: {
-        lineWidth: global.styles.lineWidth || styles.lineWidth,
-        stroke: global.styles.lineColor
-      },
-
-      zlevel: constants.ZINDEX_LINE
-    });
-
-    this.label = new zrender.Text({
-      style: {
-        text: attrs.sourceLabel || attrs.targetLabel,
-        x: 0,
-        y: 0,
-        fontSize: attrs.textSize || global.styles.textSize,
-        textFill: styles.textColor || global.styles.textColor,
-        textAlign: 'center',
-        textVerticalAlign: 'middle'
-      }
-    });
-
-    this.refreshEdgePosition(sourceAttrs, targetAttrs);
 
     this.group.add(this.line);
     this.group.add(this.label);
+
+    this.root.add(this.group)
 
     this.group.toporEl = this;
     this.group.toporId = this.id;
@@ -75,16 +35,48 @@ export default class EdgeElement extends BaseElement {
     this.line.toporType = 'edge-line'
     this.label.toporType = 'edge-label'
 
+    this.render()
+  }
+
+  render() {
+    this.getFinalAttr();
+
+    this.line.attr({
+      style: {
+        lineWidth: this.finalAttr.lineWidth,
+        stroke: this.finalAttr.lineColor,
+        lineDash: this.finalAttr.lineStyle === 'dashed' ? [5, 5] : null
+      },
+      zlevel: 1
+    });
+
+    this.label.attr({
+      style: {
+        text: this.finalAttr.label,
+        fontSize: this.finalAttr.textSize,
+        textFill: this.finalAttr.labelColor,
+        textAlign: 'center',
+        textVerticalAlign: 'middle'
+      },
+      zlevel: 2
+    });
+
+    const sourceElement = this.graph.findElementById(this.finalAttr.source);
+    const targetElement = this.graph.findElementById(this.finalAttr.target);
+
+    const handleRefresh = () => {
+      const sourceAttrs = sourceElement.finalAttr;
+      const targetAttrs = targetElement.finalAttr;
+
+      this.refreshEdgePosition(sourceAttrs, targetAttrs);
+    }
+
     // 连线随节点移动
-    sourceElement.on('dragging', () => {
-      this.refreshEdgePosition(sourceAttrs, targetAttrs);
-    });
+    sourceElement.on('dragging', handleRefresh);
 
-    targetElement.on('dragging', () => {
-      this.refreshEdgePosition(sourceAttrs, targetAttrs);
-    });
+    targetElement.on('dragging', handleRefresh);
 
-    return this;
+    handleRefresh();
   }
 
   // 刷新连线位置
@@ -100,34 +92,31 @@ export default class EdgeElement extends BaseElement {
           y2: target.y,
         }
       })
-      const labelPosition = util.getLabelPositionOfEdge(
-        util.getLongestLine([source, target]),
-        { x: 0, y: 10 }
-      );
-      this.label.attr({
-        style: {
-          x: labelPosition.x,
-          y: labelPosition.y,
-        }
-      });
-
-      this.label.attr('origin', [labelPosition.x, labelPosition.y]);
-      this.label.attr('rotation', labelPosition.rotate);
-
       this.line.show();
-      this.label.show();
+      if (!this.finalAttr.labelHide) {
+        const labelPosition = util.getLabelPositionOfEdge(
+          util.getLongestLine([source, target]),
+          { x: 0, y: 10 }
+        );
+
+        this.label.attr({
+          style: {
+            x: labelPosition.x,
+            y: labelPosition.y,
+          }
+        });
+  
+        this.label.attr('origin', [labelPosition.x, labelPosition.y]);
+        this.label.attr('rotation', labelPosition.rotate);
+        this.label.show();
+      } else {
+        this.label.hide();
+      }
+
     } else {
       this.line.hide();
       this.label.hide();
     }
-  }
-
-  updateStatus() {
-    return this;
-  }
-
-  update() {
-    return this;
   }
 
   dispose() {

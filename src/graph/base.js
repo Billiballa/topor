@@ -17,11 +17,11 @@ import initPlugin from '../plugins'
  * @extends InitMixin、StateMixin、EventMixin
  */
 export default class BaseGraph extends util.mix(StateMixin, EventMixin) {
-  constructor(dom, options) {
+  constructor(dom, option) {
     super();
 
     this.dom = dom;
-    this.zrender = zrender.init(dom, options);
+    this.zrender = zrender.init(dom, option);
     this.root = new zrender.Group();
     this.zrender.add(this.root);
 
@@ -35,14 +35,15 @@ export default class BaseGraph extends util.mix(StateMixin, EventMixin) {
    * @return {BaseGraph}
    */
   render(data) {
-    this.setOptions({
-      styles: data.styles,
-      attrs: data.attrs
-    });
-
-    data.els.forEach(el => {
-      this.addData(el);
-    });
+    for (const type in data) {
+      if (Object.prototype.hasOwnProperty.call(data, type)) {
+        const els = data[type];
+        this.setElAttr(type, els.attr)
+        els.data.forEach(el => {
+          this.addData({ type, ...el });
+        })
+      }
+    }
 
     return this;
   }

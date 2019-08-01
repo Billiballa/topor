@@ -61,10 +61,4 @@ export default class EventMixin {
     this.off();
     return this;
   }
-
-  // ********** 需要子类实现的方法 ***********
-  // render(data){return this; }
-  // update(data){return this; }
-  // updateStatus(data){return this; }
-  // exportData(data){return null; }
 }
