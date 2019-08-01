@@ -15,7 +15,7 @@ const nodeData = Array(240).fill(1).map((item, i, arr) => ({
     y: h * (1 - 2 * padding) * (parseInt(i / 20) / parseInt(arr.length / 20)) + h * padding,
     width: 24,
     height: 24,
-    image: '/assets/10_Solaris.png',
+    image: '/assets/logo.png',
     labelPosition: 'bottom',
     label: `node ${i + 1}`,
     CNLabel: "",
