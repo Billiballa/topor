@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/Billiballa/topor#readme",
   "dependencies": {
-    "zrender": "^4.0.7"
+    "zrender": "^5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
