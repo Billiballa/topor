@@ -45,7 +45,7 @@
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^5.0.4",
     "rollup-plugin-serve": "^1.0.1",
-    "terser": "^4.0.0"
+    "terser": "^4.8.1"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
